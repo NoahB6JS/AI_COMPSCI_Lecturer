@@ -1,9 +1,9 @@
 import requests
-
-API_KEY = "8125c3b1a16d4a4d80cb903d323c7b99"
-API_URL = "https://api.aimlapi.com/v1/chat/completions"
-
-SYSTEM_PROMPT = """
+class Get_ai_output:
+    def __init__(self):
+        self.API_KEY = "8125c3b1a16d4a4d80cb903d323c7b99"
+        self.API_URL = "https://api.aimlapi.com/v1/chat/completions"
+        self.SYSTEM_PROMPT = """
 You are an expert Computer Science lecturer and academic tutor at a top university. You have deep expertise across core computer science and artificial intelligence topics, including programming (Python, Java, C/C++, JavaScript), algorithms and data structures, discrete mathematics, operating systems, computer architecture, databases, software engineering, machine learning, and artificial intelligence.
 
 Your primary role is to teach and mentor university-level students. You explain concepts with clarity, precision, and academic rigor, while adapting explanations to the student’s current level of understanding. You prioritise correctness, conceptual understanding, and best practices over shortcuts.
@@ -38,29 +38,30 @@ Your goal is not just to give answers, but to help the student learn, reason, an
 
 this is the stusents input to you as a teacher: 
 """
+    def api_contact(self,prompt):
+        while True:
+            prompt = input(" ")
+            if prompt.lower() in ["exit", "quit"]:
+                break
 
-while True:
-    prompt = input(" ")
-    if prompt.lower() in ["exit", "quit"]:
-        break
+            payload = {
+                "model": "claude-opus-4-5-20251101",
+                "messages": [
+                    {"role": "user", "content": prompt + self.SYSTEM_PROMPT}
+                ]
+            }
 
-    payload = {
-        "model": "claude-opus-4-5-20251101",
-        "messages": [
-            {"role": "user", "content": prompt + SYSTEM_PROMPT}
-        ]
-    }
+            headers = {
+                "Authorization": f"Bearer {self.API_KEY}",
+                "Content-Type": "application/json"
+            }
 
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
+            response = requests.post(self.API_URL, json=payload, headers=headers)
 
-    response = requests.post(API_URL, json=payload, headers=headers)
+            if response.status_code != 200:
+                print("Error:", response.text)
+                continue
 
-    if response.status_code != 200:
-        print("Error:", response.text)
-        continue
-
-    data = response.json()
-    print("AI:", data["choices"][0]["message"]["content"])
+            data = response.json()
+            print("AI:", data["choices"][0]["message"]["content"])
+            
